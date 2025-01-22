@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Selector</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+        }
+
+        .number-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .number-btn.crossed {
+            background: #ffebee;
+            text-decoration: line-through;
+            color: #f44336;
+        }
+
+        .number-btn.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #2196f3;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="grid" id="numberGrid"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const grid = document.getElementById('numberGrid');
+        const states = JSON.parse(localStorage.getItem('numberStates')) || {};
+
+        // Create 50 buttons
+        for (let i = 1; i <= 50; i++) {
+            const button = document.createElement('button');
+            button.className = 'number-btn';
+            button.textContent = i;
+
+            // Apply saved state if exists
+            if (states[i]) {
+                button.classList.add(states[i]);
+            }
+
+            button.addEventListener('click', function() {
+                // Cycle through states: untouched -> crossed -> selected -> untouched
+                if (!this.classList.contains('crossed') && !this.classList.contains('selected')) {
+                    this.classList.add('crossed');
+                    states[i] = 'crossed';
+                } else if (this.classList.contains('crossed')) {
+                    this.classList.remove('crossed');
+                    this.classList.add('selected');
+                    states[i] = 'selected';
+                } else {
+                    this.classList.remove('selected');
+                    delete states[i];
+                }
+
+                // Save to localStorage
+                localStorage.setItem('numberStates', JSON.stringify(states));
+            });
+
+            grid.appendChild(button);
+        }
+    });
+</script>
+</body>
+</html>
